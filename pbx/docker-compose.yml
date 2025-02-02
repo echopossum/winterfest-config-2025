@@ -1,0 +1,40 @@
+services:
+  pbx-db:
+    container_name: freepbx-db
+    image: tiredofit/mariadb
+    restart: always
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=asterisk
+      - MYSQL_USER=asterisk
+      - MYSQL_PASSWORD=asteriskpass
+  freepbx-app:
+    container_name: freepbx-app
+    image: tiredofit/freepbx
+    depends_on:
+      - pbx-db
+    ports:
+      - 8080:80
+      - 5060:5060/udp
+      - 5160:5160/udp
+      - 18000-18100:18000-18100/udp
+      - 4445:4445
+    volumes:
+      - ./certs:/certs
+      - ./data:/data
+      - ./logs:/var/log
+      - ./data/www:/var/www/html
+
+    environment: 
+      - RTP_START=18000
+      - RTP_FINISH=18100
+      - DB_HOST=freepbx-db
+      - DB_EMBEDDED=false
+      - DB_PORT=3306
+      - DB_NAME=asterisk
+      - DB_USER=asterisk
+      - DB_PASS=asteriskpass
+      - ENABLE_FAIL2BAN=false
+    restart: always

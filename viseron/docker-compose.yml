@@ -1,0 +1,10 @@
+services:
+  viseron:
+    image: roflcoopter/viseron:latest
+    container_name: viseron
+    volumes:
+      - ./recordings:/recordings
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 8888:8888
